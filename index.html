@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tetris Leaderboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="page-shell">
+    <section class="tv">
+      <img class="tv-frame" src="TV_Frame.png" alt="" />
+
+      <div class="screen">
+        <div class="screen-content">
+          <header class="title-block">
+            <p class="eyebrow">OPEN CAMPUS // GRV</p>
+            <h1>LEADERBOARD</h1>
+          </header>
+
+          <div class="leaderboard-card">
+            <div class="leaderboard-head row">
+              <span>#</span>
+              <span>NAME</span>
+              <span>PTS</span>
+              <span>TIME</span>
+            </div>
+
+            <div id="leaderboard" class="leaderboard-body">
+              <div class="loading">LOADING SCORES...</div>
+            </div>
+          </div>
+
+          <footer class="screen-footer">
+            <span>PUCRS</span>
+            <span>GRV</span>
+          </footer>
+        </div>
+
+        <div class="scanlines"></div>
+        <div class="screen-vignette"></div>
+        <img class="glass-effect" src="TV_GLASS_EFFECT.png" alt="" />
+      </div>
+    </section>
+
+    <p id="status" class="status">CONNECTING...</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
