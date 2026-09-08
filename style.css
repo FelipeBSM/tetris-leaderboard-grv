@@ -289,20 +289,138 @@ h1 {
 }
 
 @media (max-width: 900px) {
-  .page-shell {
-    width: 100vw;
-    padding: 0;
-  }
-
-  .tv {
-    min-width: 900px;
-    left: 50%;
-    transform: translateX(-50%);
+  html,
+  body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    background: var(--bg);
   }
 
   body {
-    overflow-x: auto;
-    place-items: start center;
+    display: block;
+  }
+
+  .page-shell {
+    width: 100%;
+    padding: 0;
+  }
+
+  /* No TV shell on mobile: the leaderboard becomes the page itself. */
+  .tv {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: auto;
+    filter: none;
+    transform: none;
+  }
+
+  .tv-frame,
+  .scanlines,
+  .screen-vignette,
+  .glass-effect,
+  .screen-footer,
+  .status,
+  .eyebrow {
+    display: none;
+  }
+
+  .screen {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+    border-radius: 0;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(8, 28, 31, 0.72), rgba(0, 0, 0, 0.96) 72%);
+  }
+
+  .screen-content {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    min-height: 100vh;
+    padding: 22px 14px 28px;
+    text-shadow:
+      -1px 0 rgba(255, 80, 80, 0.24),
+      1px 0 rgba(80, 120, 255, 0.28),
+      0 0 7px rgba(54, 235, 245, 0.55);
+  }
+
+  .title-block {
+    margin: 0 0 18px;
+  }
+
+  h1 {
+    font-size: clamp(24px, 8vw, 38px);
+    letter-spacing: 0.09em;
+  }
+
+  .leaderboard-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .row {
+    grid-template-columns: 34px minmax(0, 1fr) 78px 68px;
+    column-gap: 8px;
+  }
+
+  .leaderboard-head {
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .leaderboard-body {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .entry {
+    min-height: 46px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .position,
+  .score,
+  .time {
+    white-space: nowrap;
+  }
+
+  .score,
+  .time {
+    text-align: right;
+  }
+}
+
+@media (max-width: 420px) {
+  .screen-content {
+    padding-inline: 10px;
+  }
+
+  .row {
+    grid-template-columns: 30px minmax(0, 1fr) 68px 58px;
+    column-gap: 6px;
+  }
+
+  .leaderboard-head,
+  .entry {
+    padding-inline: 8px;
+  }
+
+  .leaderboard-head {
+    font-size: 11px;
+  }
+
+  .entry {
+    font-size: 12px;
   }
 }
 
