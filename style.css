@@ -192,11 +192,19 @@ h1 {
 }
 
 .entry.top-2 {
-  color: #d9f9fb;
+  color: #7e8788;
+}
+.entry.top-2::before {
+  background: #7e8788;
+  box-shadow: 0 0 10px rgba(255, 242, 160, 0.7);
 }
 
 .entry.top-3 {
-  color: #9ceef3;
+  color: #f3c69c;
+}
+.entry.top-3::before {
+  background: #f3c69c;
+  box-shadow: 0 0 10px rgba(255, 242, 160, 0.7);
 }
 
 .position,
