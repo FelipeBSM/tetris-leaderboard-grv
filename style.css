@@ -192,10 +192,10 @@ h1 {
 }
 
 .entry.top-2 {
-  color: #7e8788;
+  color: #cfdadb;
 }
 .entry.top-2::before {
-  background: #7e8788;
+  background: #cfdadb;
   box-shadow: 0 0 10px rgba(255, 242, 160, 0.7);
 }
 
