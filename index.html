@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tetris Leaderboard</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Dependências locais que você já usa no WebAR -->
+  <script src="./aframe.min.js"></script>
+  <script src="./mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+
+  <main class="page-shell">
+    <section class="tv">
+      <img class="tv-frame" src="TV_Frame.png" alt="" />
+
+      <div class="screen">
+        <div class="screen-content">
+          <header class="title-block">
+            <p class="eyebrow">OPEN CAMPUS // GRV</p>
+
+            <div class="title-row">
+              <h1>LEADERBOARD</h1>
+
+              <!-- Visível somente no mobile -->
+              <button
+                id="enterArButton"
+                class="ar-mode-button"
+                type="button"
+                aria-label="Entrar no modo de realidade aumentada"
+              >
+                <span class="ar-mode-icon" aria-hidden="true">⌗</span>
+                <span>AR MODE</span>
+              </button>
+            </div>
+          </header>
+
+          <div class="leaderboard-card">
+            <div class="leaderboard-head row">
+              <span>#</span>
+              <span>NAME</span>
+              <span>PTS</span>
+              <span>TIME</span>
+            </div>
+
+            <div id="leaderboard" class="leaderboard-body">
+              <div class="loading">LOADING SCORES...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scanlines"></div>
+        <div class="screen-vignette"></div>
+        <img class="glass-effect" src="TV_GLASS_EFFECT.png" alt="" />
+      </div>
+    </section>
+
+    <p id="leaderboardStatus" class="status">CONNECTING...</p>
+  </main>
+
+  <!--
+    O AR fica montado na mesma página, mas invisível até o usuário tocar
+    em AR MODE. autoStart:false evita abrir a câmera no carregamento.
+  -->
+  <section id="arMode" class="ar-mode" aria-hidden="true">
+    <div class="ar-topbar">
+      <button id="exitArButton" class="ar-back-button" type="button">
+        <span aria-hidden="true">←</span>
+        <span>LEADERBOARD</span>
+      </button>
+
+      <div id="arStatus" class="ar-status">
+        Aponte a câmera para o sticker do GRV
+      </div>
+    </div>
+
+    <a-scene
+      id="arScene"
+      mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; filterMinCF: 0.001; filterBeta: 0.01; warmupTolerance: 5; missTolerance: 5;"
+      embedded
+      renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true; alpha: true;"
+      background="transparent: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-light type="ambient" intensity="1.5"></a-light>
+      <a-light type="directional" position="1 2 1" intensity="2"></a-light>
+
+      <a-entity id="grvTarget" mindar-image-target="targetIndex: 0">
+        <a-box
+          position="0 0 0.3"
+          scale="0.35 0.35 0.35"
+          color="#168BD2"
+          material="roughness: 0.4; metalness: 0.1;"
+          animation="property: rotation; from: 0 0 0; to: 0 360 0; dur: 4000; loop: true; easing: linear;"
+        ></a-box>
+      </a-entity>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    </a-scene>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
