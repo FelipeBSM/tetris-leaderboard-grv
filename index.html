@@ -75,7 +75,7 @@
     </div>
 
     <a-scene id="arScene"
-             mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; filterMinCF: 0.001; filterBeta: 0.01; warmupTolerance: 5; missTolerance: 5; uiScanning: no;"
+             mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; filterMinCF: 0.001; filterBeta: 0.01; warmupTolerance: 12; missTolerance: 5; uiScanning: no;"
              embedded
              renderer="colorManagement: true; physicallyCorrectLights: false; antialias: true; alpha: true;"
              background="transparent: true"
@@ -86,7 +86,7 @@
         </a-assets>
         <a-light type="ambient"
                  color="#ffffff"
-                 intensity="2.5">
+                 intensity="12.5">
         </a-light>
 
         <a-light type="directional"
