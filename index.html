@@ -61,10 +61,7 @@
     <p id="leaderboardStatus" class="status">CONNECTING...</p>
   </main>
 
-  <!--
-    O AR fica montado na mesma página, mas invisível até o usuário tocar
-    em AR MODE. autoStart:false evita abrir a câmera no carregamento.
-  -->
+
   <section id="arMode" class="ar-mode" aria-hidden="true">
     <div class="ar-topbar">
       <button id="exitArButton" class="ar-back-button" type="button">
@@ -86,17 +83,19 @@
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
     >
+      <a-assets>
+         <a-asset-item id="trofeuModel" src="./trofeu_grv_retopo.glb"></a-asset-item>
+      </a-assets>
       <a-light type="ambient" intensity="1.5"></a-light>
       <a-light type="directional" position="1 2 1" intensity="2"></a-light>
 
       <a-entity id="grvTarget" mindar-image-target="targetIndex: 0">
-        <a-box
-          position="0 0 0.3"
-          scale="0.35 0.35 0.35"
-          color="#168BD2"
-          material="roughness: 0.4; metalness: 0.1;"
-          animation="property: rotation; from: 0 0 0; to: 0 360 0; dur: 4000; loop: true; easing: linear;"
-        ></a-box>
+          <a-entity gltf-model="#trofeuModel"
+                    position="0 0 0.3"
+                    rotation="0 0 0"
+                    scale="0.18 0.18 0.18"
+                    animation__spin="property: rotation; to: 0 360 0; dur: 5000; loop: true; easing: linear;"
+                    animation__float="property: position; from: 0 -0.03 0.3; to: 0 0.05 0.3; dir: alternate; dur: 1800; loop: true; easing: easeInOutSine;"></a-entity>
       </a-entity>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
