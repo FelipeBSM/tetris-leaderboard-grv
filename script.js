@@ -4,6 +4,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbz2Gljpcyy2Ujd7mI5TM4K8
 const leaderboardEl = document.getElementById("leaderboard");
 const statusEl = document.getElementById("leaderboardStatus");
 
+
 const REFRESH_MS = 50000;
 
 function sanitizeText(value) {
@@ -97,6 +98,7 @@ const arMode = document.getElementById("arMode");
 const arScene = document.getElementById("arScene");
 const arStatus = document.getElementById("arStatus");
 const grvTarget = document.getElementById("grvTarget");
+const trofeuContainer = document.getElementById("trofeuContainer");
 
 let arRunning = false;
 let arChangingState = false;
@@ -136,7 +138,7 @@ async function enterArMode() {
   }
 
   arChangingState = true;
-
+  trofeuContainer.setAttribute("visible", false);
   arMode.classList.add("is-active");
   arMode.setAttribute("aria-hidden", "false");
   document.body.classList.add("ar-active");
@@ -185,7 +187,7 @@ async function exitArMode() {
   } finally {
     arRunning = false;
     arChangingState = false;
-
+    trofeuContainer.setAttribute("visible", false);
     arMode.classList.remove("is-active");
     arMode.setAttribute("aria-hidden", "true");
     document.body.classList.remove("ar-active");
@@ -197,13 +199,19 @@ enterArButton.addEventListener("click", enterArMode);
 exitArButton.addEventListener("click", exitArMode);
 
 grvTarget.addEventListener("targetFound", () => {
-  console.log("GRV encontrado!");
-  arStatus.textContent = "GRV DETECTADO!";
+    console.log("GRV encontrado!");
+
+    trofeuContainer.setAttribute("visible", true);
+
+    arStatus.textContent = "GRV DETECTADO!";
 });
 
 grvTarget.addEventListener("targetLost", () => {
-  console.log("GRV perdido.");
-  arStatus.textContent = "Aponte a câmera para o sticker do GRV";
+    console.log("GRV perdido.");
+
+    trofeuContainer.setAttribute("visible", false);
+
+    arStatus.textContent = "Aponte a câmera para o sticker do GRV";
 });
 
 // Se o aparelho girar/redimensionar para layout desktop, fecha o AR.
