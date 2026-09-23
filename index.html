@@ -76,9 +76,9 @@
 
     <a-scene
       id="arScene"
-      mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; filterMinCF: 0.001; filterBeta: 0.01; warmupTolerance: 5; missTolerance: 5;"
+      mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; filterMinCF: 0.001; filterBeta: 0.01; warmupTolerance: 5; missTolerance: 5; uiScanning: no;"
       embedded
-      renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true; alpha: true;"
+      renderer="colorManagement: true; physicallyCorrectLights: false; antialias: true; alpha: true;"
       background="transparent: true"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
@@ -90,12 +90,40 @@
       <a-light type="directional" position="1 2 1" intensity="2"></a-light>
 
       <a-entity id="grvTarget" mindar-image-target="targetIndex: 0">
-          <a-entity gltf-model="#trofeuModel"
-                    position="0 0 0.3"
-                    rotation="0 0 0"
-                    scale="0.18 0.18 0.18"
-                    animation__spin="property: rotation; to: 0 360 0; dur: 5000; loop: true; easing: linear;"
-                    animation__float="property: position; from: 0 -0.03 0.3; to: 0 0.05 0.3; dir: alternate; dur: 1800; loop: true; easing: easeInOutSine;"></a-entity>
+
+        <!-- Flutuação -->
+        <a-entity
+            position="0 0 0.3"
+            animation__float="property: position;
+                              from: 0 -0.03 0.3;
+                              to: 0 0.05 0.3;
+                              dir: alternate;
+                              dur: 1800;
+                              loop: true;
+                              easing: easeInOutSine;"
+        >
+
+        <!-- Rotação contínua -->
+        <a-entity
+            animation__spin="property: rotation;
+                             from: 0 0 0;
+                             to: 0 360 0;
+                             dur: 5000;
+                             loop: true;
+                             easing: linear;"
+        >
+
+            <!-- Modelo com orientação corrigida -->
+            <a-entity
+                id="trofeu"
+                gltf-model="#trofeuModel"
+                rotation="90 0 0"
+                scale="0.2 0.2 0.2"
+            ></a-entity>
+
+        </a-entity>
+      </a-entity>
+
       </a-entity>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
