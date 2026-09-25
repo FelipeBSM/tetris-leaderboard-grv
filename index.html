@@ -83,6 +83,7 @@
              device-orientation-permission-ui="enabled: false">
         <a-assets>
             <a-asset-item id="trofeuModel" src="./trofeu_grv_retopo.glb"></a-asset-item>
+            <a-asset-item id="pucrsLogoModel" src="./pucrs_logo.glb"></a-asset-item>
         </a-assets>
         <a-light type="ambient"
                  color="#ffffff"
@@ -128,30 +129,12 @@
         </a-entity>
         <a-entity id="grvTarget2" mindar-image-target="targetIndex: 1">
 
-            <!-- Flutuação -->
-            <a-entity id="trofeuContainer2" position="0 0 0.3"
-                      animation__float="property: position;
-                    from: 0 -0.03 0.3;
-                    to: 0 0.05 0.3;
-                    dir: alternate;
-                    dur: 1800;
-                    loop: true;
-                    easing: easeInOutSine;">
-
-                <!-- Rotação contínua -->
-                <a-entity animation__spin="property: rotation;
-                    from: 0 0 0;
-                    to: 0 0 360;
-                    dur: 15000;
-                    loop: true;
-                    easing: linear;">
-
-                    <a-entity id="trofeu2"
-                              gltf-model="#trofeuModel"
-                              rotation="90 0 0"
-                              scale="0.3 0.3 0.3">
-                    </a-entity>
-
+        
+            <a-entity id="trofeuContainer2" position="0 0 0.3">
+                <a-entity id="trofeu2"
+                          gltf-model="#pucrsLogoModel"
+                          rotation="90 0 0"
+                          scale="0.7 0.7 0.7">
                 </a-entity>
             </a-entity>
 
