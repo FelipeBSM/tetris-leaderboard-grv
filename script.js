@@ -270,6 +270,9 @@ const arStatus = document.getElementById("arStatus");
 const grvTarget = document.getElementById("grvTarget");
 const trofeuContainer = document.getElementById("trofeuContainer");
 
+const grvTarget2 = document.getElementById("grvTarget2");
+const trofeuContainer2 = document.getElementById("trofeuContainer2");
+
 let arRunning = false;
 let arChangingState = false;
 
@@ -319,6 +322,7 @@ async function enterArMode() {
     arChangingState = true;
 
     trofeuContainer.setAttribute("visible", false);
+    trofeuContainer2.setAttribute("visible", false);
 
     arMode.classList.add("is-active");
     arMode.setAttribute("aria-hidden", "false");
@@ -401,6 +405,10 @@ async function exitArMode() {
             "visible",
             false
         );
+        trofeuContainer2.setAttribute(
+            "visible",
+            false
+        );
 
         arMode.classList.remove("is-active");
 
@@ -458,6 +466,39 @@ grvTarget.addEventListener(
         console.log("GRV perdido.");
 
         trofeuContainer.setAttribute(
+            "visible",
+            false
+        );
+
+        arStatus.textContent =
+            "Aponte a câmera para o sticker do GRV";
+    }
+);
+
+grvTarget2.addEventListener(
+    "targetFound",
+    () => {
+
+        console.log("GRV Target 2 encontrado!");
+
+        trofeuContainer2.setAttribute(
+            "visible",
+            true
+        );
+
+        arStatus.textContent =
+            "GRV DETECTADO!";
+    }
+);
+
+
+grvTarget2.addEventListener(
+    "targetLost",
+    () => {
+
+        console.log("GRV Target 2 perdido.");
+
+        trofeuContainer2.setAttribute(
             "visible",
             false
         );
