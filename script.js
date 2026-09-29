@@ -627,7 +627,7 @@ AFRAME.registerComponent("pucrs-logo-shader", {
                         },
 
                         uBaseColor: {
-                            value: new THREE.Color("#06131d")
+                            value: new THREE.Color("#0b1d2b")
                         },
 
                         uCyan: {
@@ -799,7 +799,7 @@ AFRAME.registerComponent("pucrs-logo-shader", {
                             color +=
                                 uCyan *
                                 fresnel *
-                                0.65;
+                                0.75;
 
 
                             // Scanlines
@@ -820,7 +820,7 @@ AFRAME.registerComponent("pucrs-logo-shader", {
                             color +=
                                 uHighlight *
                                 sweep *
-                                0.30;
+                                0.38;
 
 
                             // Pulsação leve
@@ -836,7 +836,7 @@ AFRAME.registerComponent("pucrs-logo-shader", {
                                 clamp(
                                     color,
                                     vec3(0.0),
-                                    vec3(0.85)
+                                    vec3(0.92)
                                 );
 
 
