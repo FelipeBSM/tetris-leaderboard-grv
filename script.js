@@ -600,3 +600,198 @@ loadLastGoodData();
 loadLeaderboard({
     force: true
 });
+
+AFRAME.registerComponent("pucrs-logo-shader", {
+    init: function () {
+        this.meshes = [];
+        this.startTime = performance.now();
+
+        this.el.addEventListener("model-loaded", () => {
+            const model = this.el.getObject3D("mesh");
+
+            if (!model) {
+                console.warn("Modelo 3D da PUCRS não encontrado.");
+                return;
+            }
+
+            model.traverse((node) => {
+                if (!node.isMesh) return;
+
+                node.material = new THREE.ShaderMaterial({
+                    side: THREE.DoubleSide,
+
+                    uniforms: {
+                        uTime: {
+                            value: 0
+                        },
+
+                        uColor: {
+                            value: new THREE.Color("#FFFFFF")
+                        },
+
+                        uAccent: {
+                            value: new THREE.Color("#0066CC")
+                        }
+                    },
+
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vViewDirection;
+                        varying vec3 vWorldPosition;
+
+                        void main() {
+                            vec4 worldPosition =
+                                modelMatrix *
+                                vec4(position, 1.0);
+
+                            vWorldPosition =
+                                worldPosition.xyz;
+
+                            vec4 modelViewPosition =
+                                modelViewMatrix *
+                                vec4(position, 1.0);
+
+                            vNormal =
+                                normalize(
+                                    normalMatrix * normal
+                                );
+
+                            vViewDirection =
+                                normalize(
+                                    -modelViewPosition.xyz
+                                );
+
+                            gl_Position =
+                                projectionMatrix *
+                                modelViewPosition;
+                        }
+                    `,
+
+                    fragmentShader: `
+                        uniform float uTime;
+                        uniform vec3 uColor;
+                        uniform vec3 uAccent;
+
+                        varying vec3 vNormal;
+                        varying vec3 vViewDirection;
+                        varying vec3 vWorldPosition;
+
+                        void main() {
+
+                            // Fresnel nas bordas
+                            float viewDot =
+                                max(
+                                    dot(
+                                        normalize(vNormal),
+                                        normalize(vViewDirection)
+                                    ),
+                                    0.0
+                                );
+
+                            float fresnel =
+                                pow(
+                                    1.0 - viewDot,
+                                    2.5
+                                );
+
+
+                            // Faixa de luz passando
+                            float sweepPosition =
+                                mod(
+                                    uTime * 0.35,
+                                    3.0
+                                ) - 1.5;
+
+                            float diagonalPosition =
+                                vWorldPosition.x * 0.8 +
+                                vWorldPosition.y * 0.5;
+
+                            float distanceToSweep =
+                                abs(
+                                    diagonalPosition -
+                                    sweepPosition
+                                );
+
+                            float shine =
+                                1.0 -
+                                smoothstep(
+                                    0.0,
+                                    0.12,
+                                    distanceToSweep
+                                );
+
+
+                            // Pulso suave
+                            float pulse =
+                                0.97 +
+                                sin(uTime * 1.5) * 0.03;
+
+
+                            // Cor final
+                            vec3 baseColor =
+                                uColor *
+                                pulse;
+
+                            vec3 fresnelColor =
+                                uAccent *
+                                fresnel *
+                                0.6;
+
+                            vec3 shineColor =
+                                vec3(1.0) *
+                                shine *
+                                0.7;
+
+                            vec3 finalColor =
+                                baseColor +
+                                fresnelColor +
+                                shineColor;
+
+                            gl_FragColor =
+                                vec4(
+                                    finalColor,
+                                    1.0
+                                );
+                        }
+                    `
+                });
+
+                this.meshes.push(node);
+            });
+
+            console.log(
+                "Shader PUCRS aplicado em",
+                this.meshes.length,
+                "mesh(es)"
+            );
+        });
+    },
+
+    tick: function () {
+        const elapsed =
+            (performance.now() - this.startTime) / 1000;
+
+        this.meshes.forEach((mesh) => {
+            const material = mesh.material;
+
+            if (
+                material &&
+                material.uniforms &&
+                material.uniforms.uTime
+            ) {
+                material.uniforms.uTime.value =
+                    elapsed;
+            }
+        });
+    },
+
+    remove: function () {
+        this.meshes.forEach((mesh) => {
+            if (mesh.material) {
+                mesh.material.dispose();
+            }
+        });
+
+        this.meshes = [];
+    }
+});
