@@ -606,11 +606,10 @@ AFRAME.registerComponent("pucrs-logo-shader", {
         this.meshes = [];
         this.startTime = performance.now();
 
-        this.el.addEventListener("model-loaded", () => {
+        const applyShader = () => {
             const model = this.el.getObject3D("mesh");
 
             if (!model) {
-                console.warn("Modelo PUCRS não encontrado.");
                 return;
             }
 
@@ -620,46 +619,38 @@ AFRAME.registerComponent("pucrs-logo-shader", {
                 const material = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     transparent: false,
+                    toneMapped: false,
 
                     uniforms: {
                         uTime: {
                             value: 0
                         },
 
-                        // Cor principal escura
                         uBaseColor: {
-                            value: new THREE.Color("#06151f")
+                            value: new THREE.Color("#06131d")
                         },
 
-                        // Azul tecnológico
-                        uTechColor: {
-                            value: new THREE.Color("#00c8ff")
+                        uCyan: {
+                            value: new THREE.Color("#00b8e6")
                         },
 
-                        // Highlight quase branco
-                        uHighlightColor: {
-                            value: new THREE.Color("#bff6ff")
+                        uHighlight: {
+                            value: new THREE.Color("#8befff")
                         }
                     },
 
                     vertexShader: `
+                        precision highp float;
+
                         varying vec3 vNormal;
                         varying vec3 vViewDirection;
-                        varying vec3 vWorldPosition;
-                        varying vec3 vLocalPosition;
+                        varying vec3 vPosition;
 
                         void main() {
 
-                            vLocalPosition = position;
+                            vPosition = position;
 
-                            vec4 worldPosition =
-                                modelMatrix *
-                                vec4(position, 1.0);
-
-                            vWorldPosition =
-                                worldPosition.xyz;
-
-                            vec4 viewPosition =
+                            vec4 mvPosition =
                                 modelViewMatrix *
                                 vec4(position, 1.0);
 
@@ -671,195 +662,183 @@ AFRAME.registerComponent("pucrs-logo-shader", {
 
                             vViewDirection =
                                 normalize(
-                                    -viewPosition.xyz
+                                    -mvPosition.xyz
                                 );
 
                             gl_Position =
                                 projectionMatrix *
-                                viewPosition;
+                                mvPosition;
                         }
                     `,
 
                     fragmentShader: `
+                        precision highp float;
+
                         uniform float uTime;
 
                         uniform vec3 uBaseColor;
-                        uniform vec3 uTechColor;
-                        uniform vec3 uHighlightColor;
+                        uniform vec3 uCyan;
+                        uniform vec3 uHighlight;
 
                         varying vec3 vNormal;
                         varying vec3 vViewDirection;
-                        varying vec3 vWorldPosition;
-                        varying vec3 vLocalPosition;
-
+                        varying vec3 vPosition;
 
                         void main() {
 
-                            // =================================================
+                            vec3 normal =
+                                normalize(vNormal);
+
+                            vec3 viewDirection =
+                                normalize(vViewDirection);
+
+
+                            // -----------------------------
                             // FRESNEL
-                            // =================================================
+                            // -----------------------------
 
                             float NdotV =
-                                max(
-                                    dot(
-                                        normalize(vNormal),
-                                        normalize(vViewDirection)
+                                clamp(
+                                    abs(
+                                        dot(
+                                            normal,
+                                            viewDirection
+                                        )
                                     ),
-                                    0.0
+                                    0.0,
+                                    1.0
                                 );
 
                             float fresnel =
                                 pow(
                                     1.0 - NdotV,
-                                    3.0
+                                    2.3
                                 );
 
 
-                            // =================================================
-                            // SCANLINES VERTICAIS
-                            // =================================================
+                            // -----------------------------
+                            // SCANLINES
+                            // -----------------------------
+
+                            float scanWave =
+                                sin(
+                                    vPosition.y * 28.0
+                                    - uTime * 4.0
+                                );
 
                             float scan =
-                                sin(
-                                    vLocalPosition.y * 45.0
-                                    - uTime * 5.0
-                                );
-
-                            scan =
                                 smoothstep(
-                                    0.72,
+                                    0.78,
                                     1.0,
-                                    scan
+                                    scanWave
                                 );
 
 
-                            // =================================================
-                            // LINHAS DIGITAIS FINAS
-                            // =================================================
+                            // -----------------------------
+                            // MICRO GRID
+                            // -----------------------------
 
-                            float digitalLines =
-                                sin(
-                                    vLocalPosition.x * 32.0
-                                    + uTime * 1.5
+                            float gridWave =
+                                abs(
+                                    sin(
+                                        vPosition.x * 20.0
+                                    )
                                 );
 
-                            digitalLines =
+                            float grid =
                                 smoothstep(
-                                    0.92,
+                                    0.97,
                                     1.0,
-                                    digitalLines
+                                    gridWave
                                 );
 
 
-                            // =================================================
+                            // -----------------------------
                             // ENERGY SWEEP
-                            // =================================================
+                            // -----------------------------
 
                             float sweepPosition =
                                 mod(
-                                    uTime * 0.55,
-                                    4.0
-                                ) - 2.0;
+                                    uTime * 0.35,
+                                    3.0
+                                ) - 1.5;
 
-                            float diagonal =
-                                vLocalPosition.x * 0.7 +
-                                vLocalPosition.y;
+                            float sweepDistance =
+                                abs(
+                                    vPosition.y -
+                                    sweepPosition
+                                );
 
                             float sweep =
                                 1.0 -
                                 smoothstep(
                                     0.0,
-                                    0.20,
-                                    abs(
-                                        diagonal -
-                                        sweepPosition
-                                    )
+                                    0.16,
+                                    sweepDistance
                                 );
 
 
-                            // =================================================
-                            // PULSO GLOBAL
-                            // =================================================
+                            // -----------------------------
+                            // PULSO
+                            // -----------------------------
 
                             float pulse =
-                                0.85 +
-                                sin(
-                                    uTime * 2.0
-                                ) * 0.15;
+                                0.9 +
+                                sin(uTime * 1.8) * 0.1;
 
 
-                            // =================================================
-                            // MICRO FLICKER
-                            // =================================================
-
-                            float flicker =
-                                0.96 +
-                                0.04 *
-                                sin(
-                                    uTime * 18.0
-                                );
-
-
-                            // =================================================
-                            // MATERIAL BASE
-                            // =================================================
+                            // -----------------------------
+                            // COR BASE
+                            // -----------------------------
 
                             vec3 color =
                                 uBaseColor;
 
 
-                            // Luz suave frontal
-                            float frontLight =
-                                NdotV * 0.16;
-
+                            // Fresnel controlado
                             color +=
-                                uTechColor *
-                                frontLight;
-
-
-                            // Fresnel forte nas bordas
-                            color +=
-                                uTechColor *
+                                uCyan *
                                 fresnel *
-                                1.8;
+                                0.65;
 
 
                             // Scanlines
                             color +=
-                                uTechColor *
+                                uCyan *
                                 scan *
-                                0.20;
+                                0.12;
 
 
-                            // Linhas digitais
+                            // Micro grid
                             color +=
-                                uTechColor *
-                                digitalLines *
-                                0.08;
+                                uCyan *
+                                grid *
+                                0.05;
 
 
-                            // Sweep principal
+                            // Sweep tecnológico
                             color +=
-                                uHighlightColor *
+                                uHighlight *
                                 sweep *
-                                1.2;
+                                0.30;
 
 
-                            // Pulso nas bordas
+                            // Pulsação leve
                             color +=
-                                uTechColor *
+                                uCyan *
                                 fresnel *
                                 pulse *
-                                0.35;
+                                0.12;
 
 
-                            // Micro variação eletrônica
-                            color *= flicker;
+                            // Mantém tudo dentro de faixa segura
+                            color =
+                                clamp(
+                                    color,
+                                    vec3(0.0),
+                                    vec3(0.85)
+                                );
 
-
-                            // =================================================
-                            // OUTPUT
-                            // =================================================
 
                             gl_FragColor =
                                 vec4(
@@ -870,30 +849,40 @@ AFRAME.registerComponent("pucrs-logo-shader", {
                     `
                 });
 
+                if (node.material) {
+                    node.material.dispose();
+                }
+
                 node.material = material;
+                node.material.needsUpdate = true;
 
                 this.meshes.push(node);
             });
 
             console.log(
-                "PUCRS TECH SHADER aplicado:",
+                "PUCRS shader mobile aplicado:",
                 this.meshes.length,
-                "meshes"
+                "mesh(es)"
             );
-        });
+        };
+
+        if (this.el.getObject3D("mesh")) {
+            applyShader();
+        } else {
+            this.el.addEventListener(
+                "model-loaded",
+                applyShader,
+                { once: true }
+            );
+        }
     },
 
-
     tick: function () {
-
         const elapsed =
-            (performance.now() - this.startTime) /
-            1000;
+            (performance.now() - this.startTime) / 1000;
 
         this.meshes.forEach((mesh) => {
-
-            const material =
-                mesh.material;
+            const material = mesh.material;
 
             if (
                 material &&
@@ -903,19 +892,14 @@ AFRAME.registerComponent("pucrs-logo-shader", {
                 material.uniforms.uTime.value =
                     elapsed;
             }
-
         });
     },
 
-
     remove: function () {
-
         this.meshes.forEach((mesh) => {
-
             if (mesh.material) {
                 mesh.material.dispose();
             }
-
         });
 
         this.meshes = [];
